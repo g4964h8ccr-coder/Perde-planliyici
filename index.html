@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Perde Planlayıcı</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f5f5;color:#222}
+.wrap{max-width:900px;margin:auto;padding:18px}.head{background:#111;color:white;border-radius:18px;padding:20px;margin-bottom:14px}
+h1{margin:0 0 5px;font-size:25px}.muted{color:#777;font-size:13px}.head .muted{color:#bbb}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.box{background:white;border-radius:16px;padding:14px;box-shadow:0 2px 10px #0000000b}
+h2{font-size:16px;margin:0 0 10px}.item{width:100%;border:1px solid #ddd;background:white;border-radius:12px;padding:10px;margin:5px 0;text-align:left;cursor:pointer}.item.sel{border:2px solid #111}.name{font-weight:700}.price{float:right;font-weight:700}.sub{font-size:12px;color:#777;margin-top:3px}
+.preview{height:210px;background:linear-gradient(#eee,#fff);border-radius:18px;position:relative;overflow:hidden;margin-bottom:14px}
+.rod{position:absolute;left:9%;right:9%;top:58px;height:8px;border-radius:10px;background:#222}.fin{position:absolute;top:46px;width:32px;height:32px;border-radius:50%;background:#222}.left{left:6%}.right{right:6%}
+.curt{position:absolute;top:76px;bottom:0;width:30%;background:repeating-linear-gradient(90deg,#fff 0 12px,#ddd 13px 25px)}.cl{left:10%}.cr{right:10%}
+.sup{position:absolute;top:53px;width:13px;height:40px;border-radius:4px;background:#222}.s1{left:19%}.s2{left:49%}.s3{right:19%}
+.total{margin-top:14px;background:#111;color:#fff;border-radius:16px;padding:18px;display:flex;justify-content:space-between;align-items:center}.total b:last-child{font-size:24px}
+button{font:inherit}@media(max-width:700px){.grid{grid-template-columns:1fr}.preview{height:180px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="head"><h1>PERDE PLANLAYICI</h1><div class="muted">Çubuk + destek + topuz seç, sistemi oluştur ve toplam fiyatı gör.</div></div>
+<div class="preview"><div id="rod" class="rod"></div><div id="fl" class="fin left"></div><div id="fr" class="fin right"></div><div class="curt cl"></div><div class="curt cr"></div><div id="s1" class="sup s1"></div><div id="s2" class="sup s2"></div><div id="s3" class="sup s3"></div></div>
+<div class="grid">
+<section class="box"><h2>1. Perde çubuğu</h2><div id="rods"></div></section>
+<section class="box"><h2>2. Tavan / duvar desteği</h2><div id="supports"></div><p>Adet: <button onclick="qty(-1)">−</button> <b id="q">2</b> <button onclick="qty(1)">+</button></p></section>
+<section class="box"><h2>3. Topuz</h2><div id="fins"></div></section>
+</div>
+<div class="total"><div><div>SEÇİLEN SİSTEM</div><div id="summary" style="font-size:12px;opacity:.7;margin-top:4px">Henüz seçim yok.</div></div><b id="total">0 TL</b></div>
+</div>
+<script>
+const rods=[
+["RÄCKA","70–120 cm","Siyah",99],["RÄCKA","70–120 cm","Beyaz",99],
+["RÄCKA","120–210 cm","Siyah",199],["RÄCKA","120–210 cm","Beyaz",199],
+["RÄCKA","210–385 cm","Siyah",299],["RÄCKA","210–385 cm","Beyaz",299],
+["HUGAD","120–210 cm","Siyah",329]];
+const supports=[
+["BETYDLIG","Duvar/tavan desteği","Siyah",139],["BETYDLIG","Duvar/tavan desteği","Beyaz",139],
+["BETYDLIG","60 mm destek","Siyah",42.99],["BETYDLIG","60 mm destek","Beyaz",42.99]];
+const fins=[
+["VÄSENTLIG","Siyah",119],["VÄSENTLIG","Beyaz",119],
+["HELTUSS","Siyah",59.99],["HELTUSS","Beyaz",59.99],
+["ALVARSTÅNDS","Siyah",159],["ALVARSTÅNDS","Beyaz",159],
+["INSEKTSMAL","Beyaz/cam",279],["TALLBARSMAL","Siyah",329],
+["BÄCKRADULA","Siyah",349],["BÄCKRADULA","Beyaz",349],
+["SOLBLOMMOSSA","Siyah/cam",349],["SOLBLOMMOSSA","Beyaz/cam",349]];
+let R=null,S=0,F=null,Q=2;
+const money=n=>n.toLocaleString("tr-TR",{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2})+" TL";
+function list(id,a,type){let el=document.getElementById(id);el.innerHTML="";
+a.forEach((x,i)=>{let b=document.createElement("button");b.className="item "+((type==="R"?R:S===i?1:F===i?1:0)?"sel":"");
+b.innerHTML='<span class="name">'+x[0]+'</span><span class="price">'+money(type==="F"?x[2]:x[3])+'</span><div class="sub">'+x[1]+' • '+(type==="R"?x[2]:x[2])+'</div>';
+b.onclick=()=>{if(type==="R")R=i;else if(type==="S")S=i;else F=i;draw()};el.appendChild(b)})}
+function qty(n){Q=Math.max(1,Math.min(6,Q+n));draw()}
+function draw(){
+list("rods",rods,"R");list("supports",supports,"S");list("fins",fins,"F");
+document.getElementById("q").textContent=Q;
+let r=R==null?null:rods[R],s=supports[S],f=F==null?null:fins[F];
+let total=(r?r[3]:0)+s[3]*Q+(f?f[2]:0);document.getElementById("total").textContent=money(total);
+document.getElementById("summary").textContent=(r?r[0]+" "+r[1]+" "+r[2]:"Çubuk seçilmedi")+" + "+s[0]+" "+s[1]+" × "+Q+" + "+(f?f[0]+" "+f[1]:"Topuz seçilmedi");
+let black=r&&r[2]==="Siyah";document.getElementById("rod").style.background=black?"#171717":"#ddd";
+let fb=f&&f[1].toLowerCase().includes("siyah");document.getElementById("fl").style.background=fb?"#171717":"#eee";document.getElementById("fr").style.background=fb?"#171717":"#eee";
+let sb=s[2]==="Siyah";["s1","s2","s3"].forEach(x=>document.getElementById(x).style.background=sb?"#171717":"#ddd");
+document.getElementById("s2").style.display=Q>=3?"block":"none";document.getElementById("s3").style.display=Q>=4?"block":"none";
+}
+draw();
+</script>
+</body>
+</html>
