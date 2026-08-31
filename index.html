@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0058a3">
+<title>Perde Planlayıcı</title>
+<style>
+:root{--blue:#0058a3;--blue2:#eaf3ff;--ink:#111;--muted:#737373;--bg:#f4f4f2;--card:#fff;--line:#e4e4e4;--green:#08783f;--red:#c62828}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.app{max-width:1050px;margin:auto;padding:12px 14px 100px}.top{position:sticky;top:0;z-index:20;background:#f4f4f2ee;backdrop-filter:blur(16px);padding:4px 0 12px}
+.nav{display:flex;align-items:center;justify-content:space-between}.brand{font-size:19px;font-weight:950;letter-spacing:.3px}.reset{border:0;background:#fff;color:var(--red);font-weight:850;padding:10px 13px;border-radius:13px;box-shadow:0 2px 10px #00000012}
+.total{margin-top:9px;background:var(--blue);color:white;border-radius:19px;padding:14px 17px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 24px #0058a33b}.total small{opacity:.8;font-weight:700}.money{font-size:30px;font-weight:950}.count{font-size:12px;opacity:.82;margin-top:2px}
+.hero{margin-top:14px;background:#fff;border-radius:22px;padding:12px;box-shadow:0 2px 14px #0000000b}.window{height:205px;border-radius:16px;position:relative;overflow:hidden;background:linear-gradient(#eef2f4,#fff)}.glass{position:absolute;left:16%;right:16%;top:27px;height:145px;border:7px solid #d8d8d8;background:linear-gradient(90deg,#fff,#edf2f5,#fff)}.rod{position:absolute;left:9%;right:9%;top:41px;height:7px;background:#1c1c1c;border-radius:8px}.knob{position:absolute;top:33px;width:25px;height:25px;border-radius:50%;background:#1c1c1c}.k1{left:7%}.k2{right:7%}.cur{position:absolute;top:47px;bottom:0;width:25%;background:repeating-linear-gradient(90deg,#eee 0 11px,#d9d9d9 12px 21px);opacity:.92}.c1{left:13%}.c2{right:13%}
+.section{margin-top:17px}.head{display:flex;align-items:end;justify-content:space-between;margin-bottom:9px}.head h2{margin:0;font-size:18px}.head span{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:7px;overflow:auto;padding-bottom:5px}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 13px;font-weight:800;white-space:nowrap}.tab.active{background:#111;color:#fff;border-color:#111}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{background:#fff;border:2px solid transparent;border-radius:18px;padding:9px;box-shadow:0 2px 12px #0000000a}.card.sel{border-color:var(--green)}.pic{height:135px;border-radius:13px;background:#f7f7f7;display:flex;align-items:center;justify-content:center;overflow:hidden}.pic img{width:100%;height:100%;object-fit:contain}.name{font-weight:950;margin-top:9px}.meta{font-size:12px;color:#666;margin-top:3px}.price{font-size:18px;font-weight:950;margin-top:7px}.code{font-size:10px;color:#999;margin-top:2px}.choose{width:100%;border:0;border-radius:11px;padding:10px;margin-top:8px;background:#eee;font-weight:900}.sel .choose{background:#e6f4eb;color:var(--green)}.ikea{display:block;text-align:center;margin-top:7px;font-size:10px;color:var(--blue);text-decoration:none}
+.summary{background:#fff;border-radius:19px;padding:11px;box-shadow:0 2px 12px #0000000a}.row{display:flex;align-items:center;gap:9px;padding:10px 2px;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.thumb{width:48px;height:48px;border-radius:10px;background:#f6f6f6;overflow:hidden;flex:0 0 48px}.thumb img{width:100%;height:100%;object-fit:contain}.rowmain{flex:1}.rowmain b{font-size:13px}.rowmain small{display:block;color:#777;font-size:11px;margin-top:2px}.del{border:0;background:#fff;color:var(--red);font-size:21px}.empty{text-align:center;color:#777;padding:22px;border:1px dashed #ccc;border-radius:14px}
+.note{font-size:10px;line-height:1.5;color:#777;margin-top:10px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}
+
+.footer{text-align:center;color:#777;font-size:11px;font-weight:700;margin:24px 0 8px;padding-top:14px;border-top:1px solid var(--line)}
+.qty{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;padding:7px 9px;background:#f6f6f6;border-radius:11px}
+.qty-label{font-size:11px;color:#666;font-weight:800;margin-right:auto}
+.qty button{width:30px;height:30px;border:0;border-radius:9px;background:#fff;font-size:18px;font-weight:950;box-shadow:0 1px 5px #00000012}
+.qty b{min-width:24px;text-align:center;font-size:14px}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+ <div class="nav"><div class="brand">PERDE PLANLAYICI</div><button class="reset" id="reset">↻ SIFIRLA</button></div>
+ <div class="total"><div><small>TOPLAM FİYAT</small><div class="count" id="count">0 ürün • 0 parça</div></div><div class="money" id="total">0 TL</div></div>
+</header>
+
+<div class="hero"><div class="window"><div class="glass"></div><div class="rod" id="vrod"></div><div class="knob k1" id="k1"></div><div class="knob k2" id="k2"></div><div class="cur c1"></div><div class="cur c2"></div></div></div>
+
+<section class="section"><div class="head"><h2>1. ÇUBUK SEÇ</h2><span>Güncel IKEA Türkiye</span></div><div class="tabs" id="rodTabs"></div><div class="grid" id="rods"></div></section>
+<section class="section"><div class="head"><h2>2. DESTEK SEÇ</h2><span id="supportHint">Adet seç</span></div><div class="grid" id="supports"></div></section>
+<section class="section"><div class="head"><h2>3. TOPUZ SEÇ</h2><span>RÄCKA + HUGAD uyumlu</span></div><div class="grid" id="finials"></div></section>
+<section class="section"><div class="head"><h2>SEÇİM ÖZETİ</h2><span>× ile tek ürünü kaldır</span></div><div class="summary" id="summary"></div>
+<div class="note">Ürün görselleri IKEA Türkiye'nin resmi image-ikea.mncdn.com görselleridir. Fiyat/ürün bilgileri güncel IKEA Türkiye sayfalarından kontrol edilmiştir; IKEA fiyatları zamanla değişebilir.</div>
+</section>
+ <footer class="footer">© 2026 Tüm hakları Saffet Çakmak’a aittir.</footer>
+</div>
+
+<script>
+const IMG="https://image-ikea.mncdn.com/urunler/";
+const rods=[
+{id:"r70b",name:"RÄCKA",size:"70–120 cm",color:"Siyah",price:99,code:"002.171.65",img:IMG+"500_500/PE680070.jpg",url:"https://www.ikea.com.tr/urun/racka-siyah-70-120-cm-perde-cubugu-00217165"},
+{id:"r70w",name:"RÄCKA",size:"70–120 cm",color:"Beyaz",price:99,code:"702.213.95",img:IMG+"500_500/PE680071.jpg",url:"https://www.ikea.com.tr/urun/racka-beyaz-70-120-cm-perde-cubugu-70221395"},
+{id:"r120b",name:"RÄCKA",size:"120–210 cm",color:"Siyah",price:199,code:"302.171.59",img:IMG+"500_500/PE680070.jpg",url:"https://www.ikea.com.tr/urun/racka-siyah-120-210-cm-perde-cubugu-30217159"},
+{id:"r120w",name:"RÄCKA",size:"120–210 cm",color:"Beyaz",price:199,code:"902.171.61",img:IMG+"500_500/PE680071.jpg",url:"https://www.ikea.com.tr/urun/racka-beyaz-120-210-cm-perde-cubugu-90217161"},
+{id:"r210b",name:"RÄCKA",size:"210–385 cm",color:"Siyah",price:299,code:"702.171.57",img:IMG+"500_500/PE680070.jpg",url:"https://www.ikea.com.tr/urun/racka-siyah-210-385-cm-perde-cubugu-70217157"},
+{id:"r210w",name:"RÄCKA",size:"210–385 cm",color:"Beyaz",price:299,code:"402.171.49",img:IMG+"500_500/PE680071.jpg",url:"https://www.ikea.com.tr/urun/racka-beyaz-210-385-cm-perde-cubugu-40217149"},
+{id:"h120b",name:"HUGAD",size:"120–210 cm",color:"Siyah",price:329,code:"302.171.35",img:IMG+"500_500/PE680069.jpg",url:"https://www.ikea.com.tr/urun/hugad-siyah-120-210-cm-perde-cubugu-30217135"},
+{id:"h120w",name:"HUGAD",size:"120–210 cm",color:"Beyaz",price:329,code:"102.171.41",img:IMG+"500_500/PE680068.jpg",url:"https://www.ikea.com.tr/p10217141"},
+{id:"h210b",name:"HUGAD",size:"210–385 cm",color:"Siyah",price:449,code:"502.171.39",img:IMG+"500_500/PE680069.jpg",url:"https://www.ikea.com.tr/urun/hugad-siyah-210-385-cm-perde-cubugu-50217139"},
+{id:"h210w",name:"HUGAD",size:"210–385 cm",color:"Beyaz",price:449,code:"302.171.40",img:IMG+"500_500/PE680068.jpg",url:"https://www.ikea.com.tr/urun/hugad-beyaz-210-385-cm-perde-cubugu-30217140"}
+];
+const supports=[
+{id:"stb",name:"BETYDLIG",size:"Tavan / duvar desteği",color:"Siyah",price:139,code:"602.172.28",img:IMG+"500_500/PE680820.jpg",url:"https://www.ikea.com.tr/urun/betydlig-siyah-duvar-tavan-destegi-60217228"},
+{id:"stw",name:"BETYDLIG",size:"Tavan / duvar desteği",color:"Beyaz",price:139,code:"302.198.89",img:IMG+"190_190/PE680822.jpg",url:"https://www.ikea.com.tr/urun/betydlig-beyaz-duvar-tavan-destegi-30219889"},
+{id:"scb",name:"BETYDLIG",size:"Perde çubuğu desteği",color:"Siyah",price:42.99,code:"502.198.93",img:"https://www.ikea.com/mx/es/images/products/betydlig-soporte-cortinero-negro__0603487_pe680820_s5.jpg",url:"https://www.ikea.com.tr/urun/betydlig-siyah-60-mm-perde-cubugu-destegi-50219893"},
+{id:"scw",name:"BETYDLIG",size:"Perde çubuğu desteği",color:"Beyaz",price:42.99,code:"602.198.97",img:IMG+"190_190/PE680823.jpg",url:"https://www.ikea.com.tr/urun/betydlig-beyaz-60-mm-perde-cubugu-destegi-60219897"}
+];
+const finials=[
+{id:"hb",name:"HELTUSS",size:"Topuz",color:"Siyah",price:59.99,code:"406.240.44",img:IMG+"190_190/PE1010115.jpg",url:"https://www.ikea.com.tr/urun/heltuss-siyah-perde-cubugu-topuzu-40624044"},
+{id:"hw",name:"HELTUSS",size:"Topuz",color:"Beyaz",price:59.99,code:"306.200.46",img:IMG+"500_500/PE1010110.jpg",url:"https://www.ikea.com.tr/urun/heltuss-beyaz-perde-cubugu-topuzu-30620046"},
+{id:"vb",name:"VÄSENTLIG",size:"Topuz",color:"Siyah",price:119,code:"006.200.38",img:IMG+"500_500/PE1013734.jpg",url:"https://www.ikea.com.tr/urun/vasentlig-siyah-perde-cubugu-topuzu-00620038"},
+{id:"vw",name:"VÄSENTLIG",size:"Topuz",color:"Beyaz",price:119,code:"606.241.61",img:IMG+"190_190/PE1013735.jpg",url:"https://www.ikea.com.tr/urun/vasentlig-beyaz-perde-cubugu-topuzu-60624161"},
+{id:"backb",name:"BÄCKRADULA",size:"Topuz",color:"Siyah",price:349,code:"306.240.87",img:IMG+"500_500/PE1010109.jpg",url:"https://www.ikea.com.tr/urun/backradula-siyah-perde-cubugu-topuzu-30624087"},
+{id:"backw",name:"BÄCKRADULA",size:"Topuz",color:"Beyaz",price:349,code:"806.200.44",img:IMG+"190_190/PE1012525.jpg",url:"https://www.ikea.com.tr/urun/backradula-beyaz-perde-cubugu-topuzu-80620044"},
+{id:"alb",name:"ALVARSTÅNDS",size:"Topuz",color:"Siyah",price:159,code:"406.240.63",img:IMG+"500_500/PE1010113.jpg",url:"https://www.ikea.com.tr/urun/alvarstands-siyah-perde-cubugu-topuzu-40624063"},
+{id:"alw",name:"ALVARSTÅNDS",size:"Topuz",color:"Beyaz",price:159,code:"206.200.42",img:IMG+"190_190/PE1013733.jpg",url:"https://www.ikea.com.tr/urun/alvarstands-beyaz-perde-cubugu-topuzu-20620042"},
+{id:"solb",name:"SOLBLOMMOSSA",size:"Topuz",color:"Siyah-Cam",price:349,code:"806.240.75",img:IMG+"500_500/PE1010112.jpg",url:"https://www.ikea.com.tr/urun/solblommossa-siyah-cam-8-7-cm-perde-cubugu-topuzu-80624075"},
+{id:"solw",name:"SOLBLOMMOSSA",size:"Topuz",color:"Beyaz-Cam",price:349,code:"806.200.39",img:IMG+"500_500/PE1010114.jpg",url:"https://www.ikea.com.tr/urun/solblommossa-beyaz-cam-8-7-cm-perde-cubugu-topuzu-80620039"}
+];
+let state={rods:{},supports:{},finial:null,finialQty:1};
+
+const money=n=>n.toLocaleString("tr-TR",{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2})+" TL";
+function rodSupports(){if(!state.rod)return 0;let s=state.rod.size;return s.includes("70")?2:s.includes("120")?3:4}
+function tabs(){
+ document.getElementById("rodTabs").innerHTML=["Tümü","RÄCKA","HUGAD"].map(x=>`<button class="tab ${x==="Tümü"?"active":""}" data-r="${x}">${x}</button>`).join("");
+ document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-r]").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderRods(b.dataset.r)});
+}
+function getQty(x){
+ if(x.name==="RÄCKA" || x.name==="HUGAD") return state.rods[x.id]?.qty||1;
+ if(x.name==="BETYDLIG") return state.supports[x.id]?.qty||1;
+ if(x.size==="Topuz") return state.finial?.id===x.id?state.finialQty:1;
+ return 1;
+}
+function card(x,sel){
+ const qty=getQty(x);
+ const qhtml=`<div class="qty"><span class="qty-label">Adet</span><button type="button" data-qty="-1" data-qtype="${x.name==="BETYDLIG"?"support":x.size==="Topuz"?"finial":"rod"}" data-qid="${x.id}">−</button><b>${qty}</b><button type="button" data-qty="1" data-qtype="${x.name==="BETYDLIG"?"support":x.size==="Topuz"?"finial":"rod"}" data-qid="${x.id}">+</button></div>`;
+ return `<article class="card ${sel?"sel":""}"><div class="pic"><img src="${x.img}" alt="${x.name} ${x.color}"></div><div class="name">${x.name}</div><div class="meta">${x.size} • ${x.color}</div><div class="price">${money(x.price)}</div><div class="code">${x.code}</div><button class="choose" data-id="${x.id}">${sel?"✓ SEÇİLDİ":"SEÇ"}</button>${qhtml}<a class="ikea" href="${x.url}" target="_blank" rel="noopener">IKEA ürün sayfası ↗</a></article>`;
+}
+function renderRods(filter="Tümü"){
+ let a=filter==="Tümü"?rods:rods.filter(x=>x.name===filter);
+ document.getElementById("rods").innerHTML=a.map(x=>card(x,!!state.rods[x.id])).join("");
+ a.forEach(x=>{
+   const btn=document.querySelector(`#rods [data-id="${x.id}"]`);
+   if(btn)btn.onclick=()=>{
+     if(state.rods[x.id]) delete state.rods[x.id];
+     else state.rods[x.id]={item:x,qty:1};
+     draw();
+   }
+ });
+ bindQtyButtons();
+}
+function bindQtyButtons(){
+ document.querySelectorAll("[data-qty]").forEach(b=>b.onclick=(e)=>{
+   e.stopPropagation();
+   const type=b.dataset.qtype, id=b.dataset.qid, delta=Number(b.dataset.qty);
+   if(type==="rod" && state.rods[id]){
+     state.rods[id].qty=Math.max(1,state.rods[id].qty+delta);
+   }else if(type==="support" && state.supports[id]){
+     state.supports[id].qty=Math.max(1,state.supports[id].qty+delta);
+   }else if(type==="finial" && state.finial?.id===id){
+     state.finialQty=Math.max(1,state.finialQty+delta);
+   }
+   draw();
+ });
+}
+function renderSupports(){
+ document.getElementById("supports").innerHTML=supports.map(x=>card(x,!!state.supports[x.id])).join("");
+ supports.forEach(x=>{
+   const btn=document.querySelector(`#supports [data-id="${x.id}"]`);
+   if(btn)btn.onclick=()=>{
+     if(state.supports[x.id]) delete state.supports[x.id];
+     else state.supports[x.id]={item:x,qty:1};
+     draw();
+   }
+ });
+ bindQtyButtons();
+}
+function renderFinials(){
+ document.getElementById("finials").innerHTML=finials.map(x=>card(x,state.finial?.id===x.id)).join("");
+ finials.forEach(x=>{
+   const btn=document.querySelector(`#finials [data-id="${x.id}"]`);
+   if(btn)btn.onclick=()=>{state.finial=x;draw()}
+ });
+ bindQtyButtons();
+}
+function summary(){
+ let a=[];
+ Object.values(state.rods).forEach(r=>a.push([r.item,r.qty,r.item.price*r.qty]));
+ Object.values(state.supports).forEach(s=>a.push([s.item,s.qty,s.item.price*s.qty]));
+ if(state.finial)a.push([state.finial,state.finialQty,state.finial.price*state.finialQty]);
+ document.getElementById("summary").innerHTML=a.length?a.map(([x,q,v])=>`<div class="row"><div class="thumb"><img src="${x.img}"></div><div class="rowmain"><b>${x.name}</b><small>${x.size} • ${x.color} • ${q} adet</small></div><strong>${money(v)}</strong><button class="del" data-del="${x.id}">×</button></div>`).join(""):`<div class="empty">Henüz seçim yapılmadı.<br>Çubukla başlayabilirsin.</div>`;
+ a.forEach(([x])=>document.querySelector(`[data-del="${x.id}"]`).onclick=()=>{
+   if(state.rods[x.id])delete state.rods[x.id];
+   if(state.supports[x.id])delete state.supports[x.id];
+   if(state.finial?.id===x.id){state.finial=null;state.finialQty=1}
+   draw()
+ });
+}
+function draw(){
+ tabs();renderRods();renderSupports();renderFinials();summary();
+ const rodList=Object.values(state.rods);
+ const supportList=Object.values(state.supports);
+ let total=rodList.reduce((sum,r)=>sum+r.item.price*r.qty,0)
+   +supportList.reduce((sum,s)=>sum+s.item.price*s.qty,0)
+   +(state.finial?.price||0)*state.finialQty;
+ let products=rodList.length+supportList.length+(state.finial?1:0);
+ let parts=rodList.reduce((sum,r)=>sum+r.qty,0)
+   +supportList.reduce((sum,s)=>sum+s.qty,0)
+   +(state.finial?state.finialQty:0);
+ document.getElementById("total").textContent=money(total);
+ document.getElementById("count").textContent=`${products} ürün • ${parts} parça`;
+ const supportCount=supportList.reduce((sum,s)=>sum+s.qty,0);
+ document.getElementById("supportHint").textContent=supportCount?`Toplam adet: ${supportCount}`:"Adet seç";
+ const firstRod=rodList[0]?.item;
+ let white=firstRod?.color==="Beyaz";
+ document.getElementById("vrod").style.background=white?"#e8e8e8":"#222";
+ document.querySelectorAll(".knob").forEach(k=>k.style.background=state.finial?.color==="Beyaz"||state.finial?.color==="Beyaz-Cam"?"#eee":"#222");
+}
+document.getElementById("reset").onclick=()=>{state={rods:{},supports:{},finial:null,finialQty:1};draw()};draw();
+</script>
+</body></html>
